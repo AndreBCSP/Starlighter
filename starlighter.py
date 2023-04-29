@@ -27,7 +27,7 @@ np.random.seed(6)
 lbl_cmap = random_label_cmap()
 
 
-def fdistari(image_folder, model_name, model_path):
+def fdistari(image_folder, model_name, model_path, imagej_roi=False):
     """This function allows the use of a trained model in Stardist2D to segment cells in a folder with microscopy images. This outputs 
     TIF images that are labeled."""
 
@@ -37,7 +37,7 @@ def fdistari(image_folder, model_name, model_path):
 
 
 
-        # Get only the first image in each subdirectory
+        # Get only the first image in each subdirectory which should be phase contrast images
         
         img_files = sorted([f for f in files if f.endswith('.tif')])[:1]
         if not img_files:
@@ -65,32 +65,10 @@ def fdistari(image_folder, model_name, model_path):
 
 
 
-
-        # Show all test images
-        if False:
-            fig, ax = plt.subplots(7,8, figsize=(16,16))
-            for i,(a,x) in enumerate(zip(ax.flat, X)):
-                a.imshow(x if x.ndim==2 else x[...,0], cmap='gray')
-                a.set_title(i)
-                [a.axis('off') for a in ax.flat]
-                plt.tight_layout()
-            None;
-
-
-
+        #Specify the model
             
-        demo_model = False
-
-        if demo_model:
-            print (
-                "NOTE: This is loading a previously trained demo model!\n"
-                "      Please set the variable 'demo_model = False' to load your own trained model.",
-                file=sys.stderr, flush=True
-            )
-            model = StarDist2D.from_pretrained('2D_demo')
-        else:
-            model = StarDist2D(None, name=model_name, basedir=model_path)   
-        None;
+        model = StarDist2D(None, name=model_name, basedir=model_path)   
+        
 
 
 
@@ -99,18 +77,24 @@ def fdistari(image_folder, model_name, model_path):
         img = normalize(img, 1,99.8, axis=axis_norm)
         labels, polygons = model.predict_instances(img)
 
-        # Export ROIs to image directory
+
+
+        # Export labeled images to image directory
 
         
         basename = img_file[:img_file.find('_C00_ORG.tif')]
-        roi_path_img = os.path.join(root_dir, subdir, f'Z{basename}_labels.tif')
+        label_path_img = os.path.join(root_dir, subdir, f'Z{basename}_labels.tif')
         
-        print(f'Processing: {roi_path_img}')
+        print(f'Processing: {label_path_img}')
         
-        save_tiff_imagej_compatible(roi_path_img, labels, axes='YX')
+        save_tiff_imagej_compatible(label_path_img, labels, axes='YX')
 
+        if imagej_roi:
+            roi_path_img = os.path.join(root_dir, subdir, f'Z{basename}_ROI.zip')
+            export_imagej_rois(roi_path_img, polygons['coord'])
 
-
+        if next_step:
+            return nonapari
 
 
 def nonapari(image_folder, photo_number):
@@ -367,7 +351,7 @@ def stradivari(input_folder):
 
 
 def reset(input_folder):
-    """This function deletes all files created by Starlighter in the input folder."""
+    """This function deletes all files created by eFQu in the input folder."""
 
     for subdir, dirs, files in os.walk(input_folder):
         for file in files:
