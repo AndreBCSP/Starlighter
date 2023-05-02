@@ -143,12 +143,12 @@ def nonapari(image_folder, photo_number):
 
 
 
-def stradivari(input_folder):
+def stradivari(image_folder):
     """This function takes CSV files, processes their data and plots them into violin plots and a table with statistical information"""
 
     # create an empty dictionary to store the dataframes
     dataframes = {}
-    root_dir = input_folder
+    root_dir = image_folder
 
     # loop through the directory
     for subdir, dirs, files in os.walk(root_dir):
@@ -350,10 +350,10 @@ def stradivari(input_folder):
 
 
 
-def reset(input_folder):
+def reset(image_folder):
     """This function deletes all files created by eFQu in the input folder."""
 
-    for subdir, dirs, files in os.walk(input_folder):
+    for subdir, dirs, files in os.walk(image_folder):
         for file in files:
             if file.endswith('_labels.tif'):
                 os.remove(os.path.join(subdir, file))
