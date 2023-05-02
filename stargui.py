@@ -26,7 +26,7 @@ class App(customtkinter.CTk):
         # load images with light and dark mode image
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
         self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "starburst.png")), size=(60, 60))
-        self.large_test_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "large_test_image.png")), size=(500, 150))
+        
         self.iconbitmap(os.path.join(image_path, "starburst.ico"))
         
 
@@ -78,31 +78,38 @@ class App(customtkinter.CTk):
 
         # create home frame
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.home_frame.grid_columnconfigure(0, weight=1)
+        self.home_frame.grid_columnconfigure(2, weight=1)
+        self.home_frame.grid_rowconfigure(5, weight=2)
 
-        self.home_frame_large_image_label = customtkinter.CTkLabel(self.home_frame, text="", image=self.large_test_image)
-        self.home_frame_large_image_label.grid(row=0, column=0, padx=20, pady=10)
+        self.home_title = customtkinter.CTkLabel(self.home_frame, text="How it works", font=customtkinter.CTkFont(size=50))
+        self.home_title.grid(row=0, column=0)
 
-       
+        self.home_explanation_1 = customtkinter.CTkLabel(self.home_frame, text='1. Introduce the image folder and the model folder', font=customtkinter.CTkFont(size=15))
+        self.home_explanation_1.grid(row=1, column=0)
+        
+
+        self.choose_image_folder_1 = customtkinter.CTkButton(self.home_frame, text='Choose image folder', command=self.get_folder1)
+        self.choose_image_folder_1.grid(row=2, column=0, padx=20, pady=10)
+
+        self.image_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
+        self.image_folder_path.grid(row=2, column=1, padx=20, pady=20)
 
 
+
+        self.choose_model_folder_2 = customtkinter.CTkButton(self.home_frame, text='Choose model folder', command=self.get_folder2)
+        self.choose_model_folder_2.grid(row=3, column=0, padx=20, pady=10)
+
+        self.model_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
+        self.model_folder_path.grid(row=3, column=1, padx=20, pady=20)
+
+        self.home_explanation_2 = customtkinter.CTkLabel(self.home_frame, text='      2. Go to the menus on the left and check your options', font=customtkinter.CTkFont(size=15))
+        self.home_explanation_2.grid(row=4, column=0)
 
         # create second frame
         self.fdistari_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.fdistari_frame.grid_rowconfigure(4, weight=1)
+        self.fdistari_frame.grid_columnconfigure(4, weight=1)
 
-        self.choose_image_folder_1 = customtkinter.CTkButton(self.fdistari_frame, text='Choose image folder', command=self.get_folder1)
-        self.choose_image_folder_1.grid(row=0, column=0, padx=20, pady=10)
-
-        self.image_folder_path = customtkinter.CTkLabel(self.fdistari_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
-        self.image_folder_path.grid(row=0, column=1, padx=20, pady=20)
-
-
-
-        self.choose_model_folder_2 = customtkinter.CTkButton(self.fdistari_frame, text='Choose model folder', command=self.get_folder2)
-        self.choose_model_folder_2.grid(row=1, column=0, padx=20, pady=10)
-
-        self.model_folder_path = customtkinter.CTkLabel(self.fdistari_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
-        self.model_folder_path.grid(row=1, column=1, padx=20, pady=20)
 
         def checkbox_imagej_roi():
             global imagej_roi
@@ -116,7 +123,8 @@ class App(customtkinter.CTk):
                                      variable=check_var, onvalue="on", offvalue="off")
         checkbox.grid(row=2, column=0)
 
-    
+        self.fdistari_explanation_1 = customtkinter.CTkLabel(self.fdistari_frame, text='Tick this box if you want the program to output ImageJ ROI files too', font=customtkinter.CTkFont(size=15))
+        self.fdistari_explanation_1.grid(row=1, column=0)
 
 
         # create third frame
