@@ -3,6 +3,7 @@ from tkinter import filedialog
 
 import customtkinter
 from PIL import Image
+from starlighter import *
 
 image_folder = ''
 model_name = ''
@@ -79,7 +80,7 @@ class App(customtkinter.CTk):
 
         # create home frame
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.home_frame.grid_columnconfigure(2, weight=1)
+        self.home_frame.grid_columnconfigure(3, weight=1)
         self.home_frame.grid_rowconfigure(5, weight=2)
 
         self.home_title = customtkinter.CTkLabel(self.home_frame, text="How it works", font=customtkinter.CTkFont(size=50))
@@ -103,8 +104,16 @@ class App(customtkinter.CTk):
         self.model_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
         self.model_folder_path.grid(row=3, column=1, padx=20, pady=20)
 
-        self.home_explanation_2 = customtkinter.CTkLabel(self.home_frame, text='      2. Go to the menus on the left and check your options', font=customtkinter.CTkFont(size=15))
+        self.home_explanation_2 = customtkinter.CTkLabel(self.home_frame, text='      2. Go to the menus on the left and check your options and inputs', font=customtkinter.CTkFont(size=15))
         self.home_explanation_2.grid(row=4, column=0)
+
+        self.run_button = customtkinter.CTkButton(self.home_frame, text='Run', command=self.run_starlighter)
+        self.run_button.grid(row=5, column=2)
+
+        self.reset_button = customtkinter. CTkButton(self.home_frame, text='Reset', command=self.reset_event)
+        self.reset_button.grid(row=5, column=3)
+
+
 
         # create second frame
         self.fdistari_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -219,14 +228,24 @@ class App(customtkinter.CTk):
             global photo_number
             photo_number = int(photo_number_string)
 
+
+
+    def run_starlighter(self):
+        fdistari(image_folder, model_name, model_path, imagej_roi)
+        nonapari(image_folder, photo_number)
+        stradivari(image_folder)
+
+    def reset_event(self):
+        reset(image_folder)
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()
 
 
 
-print(image_folder)
-print(model_name)
-print(model_path)
-print(imagej_roi)
-print(photo_number)
+#print(image_folder)
+#print(model_name)
+#print(model_path)
+#print(imagej_roi)
+#print(photo_number)
