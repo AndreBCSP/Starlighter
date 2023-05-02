@@ -8,6 +8,7 @@ image_folder = ''
 model_name = ''
 model_path = ''
 imagej_roi = ''
+photo_number = ''
 
 
 
@@ -129,6 +130,20 @@ class App(customtkinter.CTk):
 
         # create third frame
         self.nonapari_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.nonapari_frame.grid_rowconfigure(4, weight=1)
+        self.nonapari_frame.grid_columnconfigure(4, weight=1)
+
+
+
+
+        self.photo_number_entry = customtkinter.CTkEntry(self.nonapari_frame, placeholder_text='Insert here the number')
+        self.photo_number_entry.grid(row=1, column=0)
+
+        self.photo_number_entry_button = customtkinter.CTkButton(self.nonapari_frame, text='Set', command=self.photo_number_entry_get)
+        self.photo_number_entry_button.grid(row=1, column=1)
+
+        
+        
 
         # create third frame
         self.stradivari_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -192,6 +207,10 @@ class App(customtkinter.CTk):
         model_name = os.path.basename(model_path)
         self.model_folder_path.configure(text=f'Model: {model_name}     in: {model_path}')
     
+    def photo_number_entry_get(self):
+            photo_number_string = self.photo_number_entry.get()
+            global photo_number
+            photo_number = int(photo_number_string)
 
 if __name__ == "__main__":
     app = App()
@@ -203,3 +222,4 @@ print(image_folder)
 print(model_name)
 print(model_path)
 print(imagej_roi)
+print(photo_number)
