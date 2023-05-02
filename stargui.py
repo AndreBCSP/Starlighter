@@ -93,8 +93,16 @@ class App(customtkinter.CTk):
         self.choose_image_folder_1 = customtkinter.CTkButton(self.fdistari_frame, text='Choose image folder', command=self.get_folder1)
         self.choose_image_folder_1.grid(row=0, column=0, padx=20, pady=10)
 
-        self.choose_image_folder_2 = customtkinter.CTkButton(self.fdistari_frame, text='Choose model folder', command=self.get_folder2)
-        self.choose_image_folder_2.grid(row=0, column=1, padx=20, pady=10)
+        self.image_folder_path = customtkinter.CTkLabel(self.fdistari_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
+        self.image_folder_path.grid(row=0, column=1, padx=20, pady=20)
+
+
+
+        self.choose_model_folder_2 = customtkinter.CTkButton(self.fdistari_frame, text='Choose model folder', command=self.get_folder2)
+        self.choose_model_folder_2.grid(row=1, column=0, padx=20, pady=10)
+
+        self.model_folder_path = customtkinter.CTkLabel(self.fdistari_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
+        self.model_folder_path.grid(row=1, column=1, padx=20, pady=20)
 
         def checkbox_imagej_roi():
             global imagej_roi
@@ -106,7 +114,7 @@ class App(customtkinter.CTk):
         check_var = customtkinter.StringVar(value='off')
         checkbox = customtkinter.CTkCheckBox(self.fdistari_frame, text="Export ImageJ ROIs", command=checkbox_imagej_roi,
                                      variable=check_var, onvalue="on", offvalue="off")
-        checkbox.grid(row=1, column=0)
+        checkbox.grid(row=2, column=0)
 
     
 
@@ -168,12 +176,13 @@ class App(customtkinter.CTk):
     def get_folder1(self):
         global image_folder
         image_folder = filedialog.askdirectory()
+        self.image_folder_path.configure(text=image_folder)
         
     def get_folder2(self):
         global model_path, model_name
         model_path = filedialog.askdirectory()
         model_name = os.path.basename(model_path)
-
+        self.model_folder_path.configure(text=f'Model: {model_name}     in: {model_path}')
     
 
 if __name__ == "__main__":
