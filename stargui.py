@@ -18,7 +18,7 @@ class App(customtkinter.CTk):
 
 
         self.title("Starlighter")
-        self.geometry("800x550")
+        self.geometry("900x650")
 
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
@@ -108,8 +108,8 @@ class App(customtkinter.CTk):
 
         # create second frame
         self.fdistari_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.fdistari_frame.grid_rowconfigure(4, weight=1)
-        self.fdistari_frame.grid_columnconfigure(4, weight=1)
+        self.fdistari_frame.grid_rowconfigure(5, weight=2)
+        self.fdistari_frame.grid_columnconfigure(5, weight=2)
 
 
         def checkbox_imagej_roi():
@@ -122,27 +122,34 @@ class App(customtkinter.CTk):
         check_var = customtkinter.StringVar(value='off')
         checkbox = customtkinter.CTkCheckBox(self.fdistari_frame, text="Export ImageJ ROIs", command=checkbox_imagej_roi,
                                      variable=check_var, onvalue="on", offvalue="off")
-        checkbox.grid(row=2, column=0)
+        checkbox.grid(row=1, column=1)
 
-        self.fdistari_explanation_1 = customtkinter.CTkLabel(self.fdistari_frame, text='Tick this box if you want the program to output ImageJ ROI files too', font=customtkinter.CTkFont(size=15))
+        self.fdistari_explanation_1 = customtkinter.CTkLabel(self.fdistari_frame, text='  Tick this box if you want the program to output ImageJ ROI files too:   ', font=customtkinter.CTkFont(size=15))
         self.fdistari_explanation_1.grid(row=1, column=0)
+
+        self.blank_line_1 = customtkinter.CTkLabel(self.fdistari_frame, text="", font=customtkinter.CTkFont(size=5))
+        self.blank_line_1.grid(row=0, column=0, padx=5, pady=5)
 
 
         # create third frame
         self.nonapari_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.nonapari_frame.grid_rowconfigure(4, weight=1)
-        self.nonapari_frame.grid_columnconfigure(4, weight=1)
+        self.nonapari_frame.grid_rowconfigure(5, weight=1)
+        self.nonapari_frame.grid_columnconfigure(5, weight=1)
 
 
 
 
         self.photo_number_entry = customtkinter.CTkEntry(self.nonapari_frame, placeholder_text='Insert here the number')
-        self.photo_number_entry.grid(row=1, column=0)
+        self.photo_number_entry.grid(row=3, column=0)
 
         self.photo_number_entry_button = customtkinter.CTkButton(self.nonapari_frame, text='Set', command=self.photo_number_entry_get)
-        self.photo_number_entry_button.grid(row=1, column=1)
+        self.photo_number_entry_button.grid(row=4, column=0)
 
-        
+        self.nonapari_explanation = customtkinter.CTkLabel(self.nonapari_frame, text="  In your folder you have a Brightfield image and then the fluorescence images.", font=customtkinter.CTkFont(size=15))
+        self.nonapari_explanation.grid(row=0, column=0, padx=20, pady=20)
+
+        self.nonapari_explanation_2 = customtkinter.CTkLabel(self.nonapari_frame, text="  If you want to quantify, for example, GFP, and it is the second photo, write 2.", font=customtkinter.CTkFont(size=15))
+        self.nonapari_explanation_2.grid(row=1, column=0, padx=20, pady=20)
         
 
         # create third frame
