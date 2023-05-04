@@ -1,4 +1,5 @@
 import os
+import sys
 from tkinter import filedialog
 
 import customtkinter
@@ -11,7 +12,17 @@ model_path = ''
 imagej_roi = ''
 photo_number = ''
 
+class output_window(customtkinter.CTkToplevel):
+    def __init__(self):
+        super().__init__()
 
+        self.geometry("400x300")
+
+        self.label = customtkinter.CTkLabel(self, text="Terminal")
+        self.label.pack(padx=20, pady=20)
+
+        self.code_textbox = customtkinter.CTkTextbox(self, font=customtkinter.CTkFont(size=10), width=300, text_color='white')
+        
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -24,6 +35,9 @@ class App(customtkinter.CTk):
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
+        self.minsize(900, 650)
+        
+        self.code_textbox_window = None
 
         # load images with light and dark mode image
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
@@ -80,43 +94,50 @@ class App(customtkinter.CTk):
 
         # create home frame
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.home_frame.grid_columnconfigure(3, weight=1)
-        self.home_frame.grid_rowconfigure(7, weight=1)
+        self.home_frame.grid_columnconfigure(2, weight=1)
+        self.home_frame.grid_rowconfigure(8, weight=1)
 
-        self.home_title = customtkinter.CTkLabel(self.home_frame, text="  How it works", font=customtkinter.CTkFont(size=50))
+        self.home_title = customtkinter.CTkLabel(self.home_frame, text="  How does it work?", font=customtkinter.CTkFont(size=50, underline=True, weight='bold'))
         self.home_title.grid(row=0, column=0, sticky='w')
 
+        self.blank_line_2 = customtkinter.CTkLabel(self.home_frame, text="", font=customtkinter.CTkFont(size=20))
+        self.blank_line_2.grid(row=1, column=0, sticky='w')
+
+
         self.home_explanation_1 = customtkinter.CTkLabel(self.home_frame, text='     1. Introduce the image folder and the model folder', font=customtkinter.CTkFont(size=15))
-        self.home_explanation_1.grid(row=1, column=0, sticky='w')
+        self.home_explanation_1.grid(row=2, column=0, sticky='w')
         
 
         self.choose_image_folder_1 = customtkinter.CTkButton(self.home_frame, text='Choose image folder', command=self.get_folder1)
-        self.choose_image_folder_1.grid(row=2, column=0, padx=20, pady=10, sticky='w')
+        self.choose_image_folder_1.grid(row=3, column=0, padx=20, pady=10, sticky='w')
 
         self.image_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
-        self.image_folder_path.grid(row=2, column=1, padx=20, pady=20)
+        self.image_folder_path.grid(row=3, column=0, padx=20, pady=20, sticky='w')
 
-        self.model_name_entry = customtkinter.CTkEntry(self.home_frame, placeholder_text='Insert here the model folder name', width=210)
-        self.model_name_entry.grid(row=3, column=0)
+        self.model_name_entry = customtkinter.CTkEntry(self.home_frame, placeholder_text='Insert here the model folder name', width=400, corner_radius=5)
+        self.model_name_entry.grid(row=4, column=0)
 
         self.model_name_entry_button = customtkinter.CTkButton(self.home_frame, text='Set', command=self.model_name_entry_get, width=40)
-        self.model_name_entry_button.grid(row=3, column=1, sticky='w')
+        self.model_name_entry_button.grid(row=4, column=1, sticky='w')
 
         self.choose_model_folder = customtkinter.CTkButton(self.home_frame, text='Choose model folder', command=self.get_folder2)
-        self.choose_model_folder.grid(row=4, column=0, padx=20, pady=10, sticky='w')
+        self.choose_model_folder.grid(row=5, column=0, padx=20, pady=10, sticky='w')
 
 
         self.model_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
-        self.model_folder_path.grid(row=4, column=1, padx=20, pady=20)
+        self.model_folder_path.grid(row=5, column=0, padx=20, pady=20)
 
         self.home_explanation_2 = customtkinter.CTkLabel(self.home_frame, text='    2. Go to the menus on the left and check your options and inputs', font=customtkinter.CTkFont(size=15))
-        self.home_explanation_2.grid(row=6, column=0, sticky='w')
+        self.home_explanation_2.grid(row=7, column=0, sticky='w')
 
-        self.run_button = customtkinter.CTkButton(self.home_frame, text='Run', command=self.run_starlighter)
-        self.run_button.grid(row=7, column=0, sticky='w')
+        self.run_button = customtkinter.CTkButton(self.home_frame, text='Run', command=self.run_starlighter, width=40)
+        self.run_button.grid(row=8, column=0, sticky='w')
 
-        self.reset_button = customtkinter. CTkButton(self.home_frame, text='Reset', command=self.reset_event)
-        self.reset_button.grid(row=7, column=1, sticky='w')
+        self.reset_inputs_button = customtkinter.CTkButton(self.home_frame, text='Reset Inputs', command=self.reset_inputs_event, width=50)
+        self.reset_inputs_button.grid(row=8, column=1, sticky='w')
+
+        self.reset_all_button = customtkinter.CTkButton(self.home_frame, text='Reset All', command=self.reset_all_event, width=50)
+        self.reset_all_button.grid(row=8, column=2, sticky='w')
 
 
 
@@ -155,7 +176,7 @@ class App(customtkinter.CTk):
         self.nonapari_explanation = customtkinter.CTkLabel(self.nonapari_frame, text="  In your folder you have a Brightfield image and then the fluorescence images.", font=customtkinter.CTkFont(size=15))
         self.nonapari_explanation.grid(row=0, column=0, padx=20, pady=20)
 
-        self.nonapari_explanation_2 = customtkinter.CTkLabel(self.nonapari_frame, text="  If you want to quantify, for example, GFP, and it is the second photo, write 2.", font=customtkinter.CTkFont(size=15))
+        self.nonapari_explanation_2 = customtkinter.CTkLabel(self.nonapari_frame, text=" If you want to quantify, for example, GFP, and it is the second photo, write 2.", font=customtkinter.CTkFont(size=15))
         self.nonapari_explanation_2.grid(row=1, column=0, padx=20, pady=20)
         
 
@@ -238,12 +259,64 @@ class App(customtkinter.CTk):
                 imagej_roi = False
 
     def run_starlighter(self):
+
+        if self.code_textbox_window is None or not self.code_textbox_window.winfo_exists():
+            self.code_textbox_window = output_window(self)  # create window if its None or destroyed
+        else:
+            self.code_textbox_window.focus()
+
         starlight.fdistari(image_folder, model_name, model_path, imagej_roi)
         starlight.nonapari(image_folder, photo_number)
         starlight.stradivari(image_folder)
 
-    def reset_event(self):
+        self.code_textbox.insert('0.0', sys.stdout)
+        self.code_textbox.insert('0.0', sys.stderr)
+
+
+
+
+
+    def reset_inputs_event(self):
+        global image_folder, model_path, model_path, photo_number
+        image_folder = ''
+        model_path = ''
+        photo_number = ''
+        model_name = ''
+
+        self.check_var = 'off'
+        self.image_folder_path.configure(text='')
+        self.model_folder_path.configure(text='')
+        self.photo_number_entry.delete(0, len(self.photo_number_entry.get()))
+        self.model_name_entry.delete(0, len(self.model_name_entry.get()))
+
+
+
+
+    def reset_all_event(self):
+        
+        global image_folder, model_path, model_path, photo_number
+
         starlight.reset(image_folder)
+
+        image_folder = ''
+        model_path = ''
+        photo_number = ''
+        model_name = ''
+
+
+        self.check_var = 'off'
+        self.image_folder_path.configure(text='')
+        self.model_folder_path.configure(text='')
+        self.photo_number_entry.delete(0, len(self.photo_number_entry.get()))
+        self.model_name_entry.delete(0, len(self.model_name_entry.get()))
+
+        if self.code_textbox_window is None or not self.code_textbox_window.winfo_exists():
+            self.code_textbox_window = output_window(self)  # create window if its None or destroyed
+        else:
+            self.code_textbox_window.focus()
+
+        self.code_textbox.insert('0.0', ' Inputs were reset and all files created by Starlighter were deleted')
+
 
 if __name__ == "__main__":
     app = App()
