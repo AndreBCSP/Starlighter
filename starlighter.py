@@ -324,7 +324,7 @@ def stradivari(image_folder):
         df_stats = df.describe()
         df_count = df_stats.loc['count']
         df_mean = np.log10(df_stats.loc['mean'])
-        df_median = np.log(df_stats.loc['50%'])
+        df_median = np.log10(df_stats.loc['50%'])
         df_std = np.log10(df_stats.loc['std'])
     
         table_data = pd.DataFrame({
