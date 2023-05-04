@@ -2,8 +2,8 @@ import os
 from tkinter import filedialog
 
 import customtkinter
+import starlighter as starlight
 from PIL import Image
-from starlighter import *
 
 image_folder = ''
 model_name = ''
@@ -81,7 +81,7 @@ class App(customtkinter.CTk):
         # create home frame
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.home_frame.grid_columnconfigure(3, weight=1)
-        self.home_frame.grid_rowconfigure(5, weight=2)
+        self.home_frame.grid_rowconfigure(7, weight=1)
 
         self.home_title = customtkinter.CTkLabel(self.home_frame, text="How it works", font=customtkinter.CTkFont(size=50))
         self.home_title.grid(row=0, column=0)
@@ -96,22 +96,27 @@ class App(customtkinter.CTk):
         self.image_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
         self.image_folder_path.grid(row=2, column=1, padx=20, pady=20)
 
+        self.model_name_entry = customtkinter.CTkEntry(self.home_frame, placeholder_text='Insert here the model folder name')
+        self.model_name_entry.grid(row=3, column=0)
 
+        self.model_name_entry_button = customtkinter.CTkButton(self.home_frame, text='Set', command=self.model_name_entry_get)
+        self.model_name_entry_button.grid(row=4, column=0)
 
-        self.choose_model_folder_2 = customtkinter.CTkButton(self.home_frame, text='Choose model folder', command=self.get_folder2)
-        self.choose_model_folder_2.grid(row=3, column=0, padx=20, pady=10)
+        self.choose_model_folder = customtkinter.CTkButton(self.home_frame, text='Choose model folder', command=self.get_folder2)
+        self.choose_model_folder.grid(row=5, column=0, padx=20, pady=10)
+
 
         self.model_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
-        self.model_folder_path.grid(row=3, column=1, padx=20, pady=20)
+        self.model_folder_path.grid(row=5, column=1, padx=20, pady=20)
 
         self.home_explanation_2 = customtkinter.CTkLabel(self.home_frame, text='      2. Go to the menus on the left and check your options and inputs', font=customtkinter.CTkFont(size=15))
-        self.home_explanation_2.grid(row=4, column=0)
+        self.home_explanation_2.grid(row=6, column=0)
 
         self.run_button = customtkinter.CTkButton(self.home_frame, text='Run', command=self.run_starlighter)
-        self.run_button.grid(row=5, column=2)
+        self.run_button.grid(row=7, column=2)
 
         self.reset_button = customtkinter. CTkButton(self.home_frame, text='Reset', command=self.reset_event)
-        self.reset_button.grid(row=5, column=3)
+        self.reset_button.grid(row=7, column=3)
 
 
 
@@ -121,17 +126,10 @@ class App(customtkinter.CTk):
         self.fdistari_frame.grid_columnconfigure(5, weight=2)
 
 
-        def checkbox_imagej_roi():
-            global imagej_roi
-            if check_var.get() == 'on':
-                imagej_roi = True
-            else:
-                imagej_roi = False
-
-        check_var = customtkinter.StringVar(value='off')
-        checkbox = customtkinter.CTkCheckBox(self.fdistari_frame, text="Export ImageJ ROIs", command=checkbox_imagej_roi,
-                                     variable=check_var, onvalue="on", offvalue="off")
-        checkbox.grid(row=1, column=1)
+        self.check_var = customtkinter.StringVar(value='off')
+        self.checkbox = customtkinter.CTkCheckBox(self.fdistari_frame, text="Export ImageJ ROIs", command=self.checkbox_imagej_roi,
+                                     variable=self.check_var, onvalue="on", offvalue="off")
+        self.checkbox.grid(row=1, column=1)
 
         self.fdistari_explanation_1 = customtkinter.CTkLabel(self.fdistari_frame, text='  Tick this box if you want the program to output ImageJ ROI files too:   ', font=customtkinter.CTkFont(size=15))
         self.fdistari_explanation_1.grid(row=1, column=0)
@@ -220,7 +218,6 @@ class App(customtkinter.CTk):
     def get_folder2(self):
         global model_path, model_name
         model_path = filedialog.askdirectory()
-        model_name = os.path.basename(model_path)
         self.model_folder_path.configure(text=f'Model: {model_name}     in: {model_path}')
     
     def photo_number_entry_get(self):
@@ -228,15 +225,25 @@ class App(customtkinter.CTk):
             global photo_number
             photo_number = int(photo_number_string)
 
+    def model_name_entry_get(self):
+            global model_name
 
+            model_name = self.model_name_entry.get()
+           
+    def checkbox_imagej_roi(self):
+            global imagej_roi
+            if self.check_var.get() == 'on':
+                imagej_roi = True
+            elif self.check_var.get() == 'off':
+                imagej_roi = False
 
     def run_starlighter(self):
-        fdistari(image_folder, model_name, model_path, imagej_roi)
-        nonapari(image_folder, photo_number)
-        stradivari(image_folder)
+        starlight.fdistari(image_folder, model_name, model_path, imagej_roi)
+        starlight.nonapari(image_folder, photo_number)
+        starlight.stradivari(image_folder)
 
     def reset_event(self):
-        reset(image_folder)
+        starlight.reset(image_folder)
 
 if __name__ == "__main__":
     app = App()
@@ -244,8 +251,13 @@ if __name__ == "__main__":
 
 
 
-#print(image_folder)
-#print(model_name)
-#print(model_path)
-#print(imagej_roi)
-#print(photo_number)
+print(f'The image folder path is: {image_folder}')
+print(f'The model name is : {model_name}')
+print(f'The model folder path is: {model_path}')
+
+if imagej_roi:
+    print(f'ImageJ ROI will be exported')
+elif not imagej_roi:
+    print(f"ImageJ ROI won't be exported")
+
+print(f'The photo number is {photo_number}')

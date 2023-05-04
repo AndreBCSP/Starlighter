@@ -93,9 +93,7 @@ def fdistari(image_folder, model_name, model_path, imagej_roi=False):
             roi_path_img = os.path.join(root_dir, subdir, f'Z{basename}_ROI.zip')
             export_imagej_rois(roi_path_img, polygons['coord'])
 
-        if next_step:
-            return nonapari
-
+    
 
 def nonapari(image_folder, photo_number):
     """This function takes a labeled image from Stardist and labels a fluorescence image, quantifies the signal from each cell and exports the data to CSV format"""
@@ -267,42 +265,54 @@ def stradivari(image_folder):
     
     
     # For the green channel
-    df_concat = pd.concat(greendfs.values(), keys=greendfs.keys())
-    df_concat = df_concat.reset_index(level=0)
-    df_concat.columns = ['key', 'Label', 'Mean Intensity']
-    df_melted = pd.melt(df_concat, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
+    if green_found:
+        df_concat = pd.concat(greendfs.values(), keys=greendfs.keys())
+        df_concat = df_concat.reset_index(level=0)
+        df_concat.columns = ['key', 'Label', 'Mean Intensity']
+        df_melted = pd.melt(df_concat, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
 
-    df_melted['Log Value'] = np.log10(df_melted['Value'])
+        df_melted['Log Value'] = np.log10(df_melted['Value'])
 
-    # For the yellow channel
-    df_concat2 = pd.concat(yellowdfs.values(), keys=yellowdfs.keys())
-    df_concat2 = df_concat2.reset_index(level=0)
-    df_concat2.columns = ['key', 'Label', 'Mean Intensity']
-    df_melted2 = pd.melt(df_concat2, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
+    if yellow_found:
+        # For the yellow channel
+        df_concat2 = pd.concat(yellowdfs.values(), keys=yellowdfs.keys())
+        df_concat2 = df_concat2.reset_index(level=0)
+        df_concat2.columns = ['key', 'Label', 'Mean Intensity']
+        df_melted2 = pd.melt(df_concat2, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
 
-    df_melted2['Log Value'] = np.log10(df_melted2['Value'])
+        df_melted2['Log Value'] = np.log10(df_melted2['Value'])
 
 
     fig, axs = plt.subplots(ncols=color_count, figsize=(8*color_count,8))
     fig.subplots_adjust(bottom=0.25)
     
-    sns.violinplot(ax= axs[0], x='key', y='Log Value', data=df_melted, color=('#32E00B'))
+    if green_found:
+
+        sns.violinplot(ax= axs[0], x='key', y='Log Value', data=df_melted, color=('#32E00B'))
 
 
 
+    if yellow_found and green_found==False:
+        sns.violinplot(ax= axs, x='key', y='Log Value', data=df_melted2, color=('#FFFF00'))
 
-    sns.violinplot(ax= axs[1], x='key', y='Log Value', data=df_melted2, color=('#FFFF00'))
+        axs.set_xlabel('Strains')
+        axs.set_ylabel('Log Average Fluorescence')
+
+        axs.set_xticklabels(axs.get_xticklabels(), rotation=45, ha='right')
+
+    if green_found and yellow_found:
+        sns.violinplot(ax= axs[1], x='key', y='Log Value', data=df_melted2, color=('#FFFF00'))
 
 
-    axs[0].set_xlabel('Strains')
-    axs[1].set_xlabel('Strains')
-    axs[0].set_ylabel('Log Average Fluorescence')
-    axs[1].set_ylabel('')
+        axs[0].set_xlabel('Strains')
+        axs[1].set_xlabel('Strains')
+        axs[0].set_ylabel('Log Average Fluorescence')
+        axs[1].set_ylabel('')
     
 
     # Set the diagonal x-tick labels for each subplot
-    for ax in axs:
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+        for ax in axs:
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
     plt.show()
     
 
