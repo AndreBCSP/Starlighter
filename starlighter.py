@@ -182,6 +182,7 @@ def stradivari(image_folder):
         blue_keyword = ['CFP']
     
         # Flag variables
+
         green_found = False
         yellow_found = False
         red_found = False
@@ -193,21 +194,25 @@ def stradivari(image_folder):
 
             if any(keyword in df_name for keyword in green_keyword):
                 if not green_found:
+                    
                     color_count += 1
                     green_found = True
                 
             if any(keyword in df_name for keyword in yellow_keyword):
                 if not yellow_found:
+                    
                     color_count += 1
                     yellow_found = True
 
             if any(keyword in df_name for keyword in red_keyword):
                 if not red_found:
+                    
                     color_count += 1
                     red_found = True
 
             if any(keyword in df_name for keyword in blue_keyword):
                 if not blue_found:
+                    
                     color_count += 1
                     blue_found = True
 
@@ -265,7 +270,7 @@ def stradivari(image_folder):
     
     
     # For the green channel
-    if green_found:
+    if len(greendfs) != 0:
         df_concat = pd.concat(greendfs.values(), keys=greendfs.keys())
         df_concat = df_concat.reset_index(level=0)
         df_concat.columns = ['key', 'Label', 'Mean Intensity']
@@ -273,7 +278,7 @@ def stradivari(image_folder):
 
         df_melted['Log Value'] = np.log10(df_melted['Value'])
 
-    if yellow_found:
+    if len(yellowdfs) != 0:
         # For the yellow channel
         df_concat2 = pd.concat(yellowdfs.values(), keys=yellowdfs.keys())
         df_concat2 = df_concat2.reset_index(level=0)
@@ -286,13 +291,13 @@ def stradivari(image_folder):
     fig, axs = plt.subplots(ncols=color_count, figsize=(8*color_count,8))
     fig.subplots_adjust(bottom=0.25)
     
-    if green_found:
+    if len(greendfs) != 0:
 
         sns.violinplot(ax= axs[0], x='key', y='Log Value', data=df_melted, color=('#32E00B'))
 
 
 
-    if yellow_found and green_found==False:
+    if len(yellowdfs) != 0 and len(greendfs) == 0:
         sns.violinplot(ax= axs, x='key', y='Log Value', data=df_melted2, color=('#FFFF00'))
 
         axs.set_xlabel('Strains')
@@ -300,7 +305,7 @@ def stradivari(image_folder):
 
         axs.set_xticklabels(axs.get_xticklabels(), rotation=45, ha='right')
 
-    if green_found and yellow_found:
+    if len(greendfs) != 0 and len(yellowdfs) != 0:
         sns.violinplot(ax= axs[1], x='key', y='Log Value', data=df_melted2, color=('#FFFF00'))
 
 

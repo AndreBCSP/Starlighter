@@ -1,7 +1,5 @@
-import io
+
 import os
-import sys
-from contextlib import redirect_stderr, redirect_stdout
 from tkinter import filedialog
 
 import customtkinter
@@ -13,20 +11,6 @@ model_name = ''
 model_path = ''
 imagej_roi = ''
 photo_number = ''
-
-class output_window(customtkinter.CTkToplevel):
-    def __init__(self):
-        super().__init__()
-
-        self.geometry("500x500")
-        self.grid_rowconfigure(0, weight=1)  # configure grid system
-        self.grid_columnconfigure(0, weight=1)
-
-        self.label = customtkinter.CTkLabel(self, text="Terminal")
-        
-
-        self.code_textbox = customtkinter.CTkTextbox(self, font=customtkinter.CTkFont(size=15), width=300, text_color='white')
-        self.code_textbox.grid(row=0, column=0, sticky="nsew")
         
 
 class App(customtkinter.CTk):
@@ -40,7 +24,7 @@ class App(customtkinter.CTk):
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
-        self.minsize(900, 650)
+        self.minsize(1000, 650)
         
         self.code_textbox_window = None
 
@@ -100,16 +84,16 @@ class App(customtkinter.CTk):
         # create home frame
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.home_frame.grid_columnconfigure(2, weight=1)
-        self.home_frame.grid_rowconfigure(8, weight=1)
+        self.home_frame.grid_rowconfigure(10, weight=1)
 
-        self.home_title = customtkinter.CTkLabel(self.home_frame, text="  How does it work?", font=customtkinter.CTkFont(size=50, underline=True, weight='bold'))
+        self.home_title = customtkinter.CTkLabel(self.home_frame, text="How does it work?", font=customtkinter.CTkFont(size=50, underline=True, weight='bold'))
         self.home_title.grid(row=0, column=0, sticky='w')
 
         self.blank_line_2 = customtkinter.CTkLabel(self.home_frame, text="", font=customtkinter.CTkFont(size=20))
         self.blank_line_2.grid(row=1, column=0, sticky='w')
 
 
-        self.home_explanation_1 = customtkinter.CTkLabel(self.home_frame, text='     1. Introduce the image folder and the model folder', font=customtkinter.CTkFont(size=15))
+        self.home_explanation_1 = customtkinter.CTkLabel(self.home_frame, text='     1. Introduce the image folder and the model folder.', font=customtkinter.CTkFont(size=15))
         self.home_explanation_1.grid(row=2, column=0, sticky='w')
         
 
@@ -119,7 +103,7 @@ class App(customtkinter.CTk):
         self.image_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
         self.image_folder_path.grid(row=3, column=0, padx=20, pady=20, sticky='w')
 
-        self.model_name_entry = customtkinter.CTkEntry(self.home_frame, placeholder_text='Insert here the model folder name', width=400, corner_radius=5)
+        self.model_name_entry = customtkinter.CTkEntry(self.home_frame, placeholder_text='Insert here the model folder name', width=505, corner_radius=5)
         self.model_name_entry.grid(row=4, column=0)
 
         self.model_name_entry_button = customtkinter.CTkButton(self.home_frame, text='Set', command=self.model_name_entry_get, width=40)
@@ -132,18 +116,23 @@ class App(customtkinter.CTk):
         self.model_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
         self.model_folder_path.grid(row=5, column=0, padx=20, pady=20)
 
-        self.home_explanation_2 = customtkinter.CTkLabel(self.home_frame, text='    2. Go to the menus on the left and check your options and inputs', font=customtkinter.CTkFont(size=15))
+        self.home_explanation_2 = customtkinter.CTkLabel(self.home_frame, text='    2. Go to the menus on the left and check your options and inputs.', font=customtkinter.CTkFont(size=15))
         self.home_explanation_2.grid(row=7, column=0, sticky='w')
 
         self.run_button = customtkinter.CTkButton(self.home_frame, text='Run', command=self.run_starlighter, width=40)
-        self.run_button.grid(row=8, column=0, sticky='w')
+        self.run_button.grid(row=10, column=0, sticky='w')
 
         self.reset_inputs_button = customtkinter.CTkButton(self.home_frame, text='Reset Inputs', command=self.reset_inputs_event, width=50)
-        self.reset_inputs_button.grid(row=8, column=1, sticky='w')
+        self.reset_inputs_button.grid(row=10, column=1, sticky='w')
 
         self.reset_all_button = customtkinter.CTkButton(self.home_frame, text='Reset All', command=self.reset_all_event, width=50)
-        self.reset_all_button.grid(row=8, column=2, sticky='w')
+        self.reset_all_button.grid(row=10, column=2, sticky='w')
 
+        self.code_textbox = customtkinter.CTkTextbox(self.home_frame, font=customtkinter.CTkFont(size=15), width=300, text_color='white', wrap='word')
+        self.code_textbox.grid(row=9, column=0)
+
+        self.home_explanation_3 = customtkinter.CTkLabel(self.home_frame, text='    3. You can run the program, reset the inputs or reset all (inputs + files created).', font=customtkinter.CTkFont(size=15))
+        self.home_explanation_3.grid(row=8, column=0, sticky='w')
 
 
         # create second frame
@@ -250,11 +239,15 @@ class App(customtkinter.CTk):
             photo_number_string = self.photo_number_entry.get()
             global photo_number
             photo_number = int(photo_number_string)
+            self.photo_number_entry_button.configure(fg_color='green')
+
 
     def model_name_entry_get(self):
             global model_name
 
             model_name = self.model_name_entry.get()
+
+            self.model_name_entry_button.configure(fg_color='green')
            
     def checkbox_imagej_roi(self):
             global imagej_roi
@@ -264,31 +257,11 @@ class App(customtkinter.CTk):
                 imagej_roi = False
 
     def run_starlighter(self):
-        if self.code_textbox_window is None or not self.code_textbox_window.winfo_exists():
-            self.code_textbox_window = output_window()  # create window if its None or destroyed
-        else:
-            self.code_textbox_window.focus()
+        
 
-        with io.StringIO() as stdout_buffer, io.StringIO() as stderr_buffer:
-            with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
-                starlight.fdistari(image_folder, model_name, model_path, imagej_roi)
-                starlight.nonapari(image_folder, photo_number)
-                starlight.stradivari(image_folder)
-
-            # Get the output from the StringIO objects
-                stdout_text = stdout_buffer.getvalue()
-                stderr_text = stderr_buffer.getvalue()
-
-                # Insert the output into the GUI
-                self.code_textbox_window.code_textbox.insert('0.0', stdout_text)
-                self.code_textbox_window.code_textbox.insert('0.0', stderr_text)
-
-
-        #self.code_textbox.insert('0.0', sys.stdout)
-        #self.code_textbox.insert('0.0', sys.stderr)
-
-
-
+        starlight.fdistari(image_folder, model_name, model_path, imagej_roi)
+        starlight.nonapari(image_folder, photo_number)
+        starlight.stradivari(image_folder)
 
 
     def reset_inputs_event(self):
@@ -303,9 +276,10 @@ class App(customtkinter.CTk):
         self.model_folder_path.configure(text='')
         self.photo_number_entry.delete(0, len(self.photo_number_entry.get()))
         self.model_name_entry.delete(0, len(self.model_name_entry.get()))
+        self.photo_number_entry_button.configure(fg_color='#1F6AA5')
+        self.model_name_entry_button.configure(fg_color='#1F6AA5')
 
-
-
+        self.code_textbox.insert('0.0', 'Inputs were reset.')
 
     def reset_all_event(self):
         
@@ -324,13 +298,11 @@ class App(customtkinter.CTk):
         self.model_folder_path.configure(text='')
         self.photo_number_entry.delete(0, len(self.photo_number_entry.get()))
         self.model_name_entry.delete(0, len(self.model_name_entry.get()))
+        self.photo_number_entry_button.configure(fg_color='#1F6AA5')
+        self.model_name_entry_button.configure(fg_color='#1F6AA5')
 
-        if self.code_textbox_window is None or not self.code_textbox_window.winfo_exists():
-            self.code_textbox_window = output_window()  # create window if its None or destroyed
-        else:
-            self.code_textbox_window.focus()
 
-        self.code_textbox_window.code_textbox.insert('0.0', ' Inputs were reset and all files created by Starlighter were deleted')
+        self.code_textbox.insert('0.0', 'Inputs were reset and all files created by Starlighter were deleted.')
 
 
 if __name__ == "__main__":
