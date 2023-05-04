@@ -83,40 +83,40 @@ class App(customtkinter.CTk):
         self.home_frame.grid_columnconfigure(3, weight=1)
         self.home_frame.grid_rowconfigure(7, weight=1)
 
-        self.home_title = customtkinter.CTkLabel(self.home_frame, text="How it works", font=customtkinter.CTkFont(size=50))
-        self.home_title.grid(row=0, column=0)
+        self.home_title = customtkinter.CTkLabel(self.home_frame, text="  How it works", font=customtkinter.CTkFont(size=50))
+        self.home_title.grid(row=0, column=0, sticky='w')
 
-        self.home_explanation_1 = customtkinter.CTkLabel(self.home_frame, text='1. Introduce the image folder and the model folder', font=customtkinter.CTkFont(size=15))
-        self.home_explanation_1.grid(row=1, column=0)
+        self.home_explanation_1 = customtkinter.CTkLabel(self.home_frame, text='     1. Introduce the image folder and the model folder', font=customtkinter.CTkFont(size=15))
+        self.home_explanation_1.grid(row=1, column=0, sticky='w')
         
 
         self.choose_image_folder_1 = customtkinter.CTkButton(self.home_frame, text='Choose image folder', command=self.get_folder1)
-        self.choose_image_folder_1.grid(row=2, column=0, padx=20, pady=10)
+        self.choose_image_folder_1.grid(row=2, column=0, padx=20, pady=10, sticky='w')
 
         self.image_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
         self.image_folder_path.grid(row=2, column=1, padx=20, pady=20)
 
-        self.model_name_entry = customtkinter.CTkEntry(self.home_frame, placeholder_text='Insert here the model folder name')
+        self.model_name_entry = customtkinter.CTkEntry(self.home_frame, placeholder_text='Insert here the model folder name', width=210)
         self.model_name_entry.grid(row=3, column=0)
 
-        self.model_name_entry_button = customtkinter.CTkButton(self.home_frame, text='Set', command=self.model_name_entry_get)
-        self.model_name_entry_button.grid(row=4, column=0)
+        self.model_name_entry_button = customtkinter.CTkButton(self.home_frame, text='Set', command=self.model_name_entry_get, width=40)
+        self.model_name_entry_button.grid(row=3, column=1, sticky='w')
 
         self.choose_model_folder = customtkinter.CTkButton(self.home_frame, text='Choose model folder', command=self.get_folder2)
-        self.choose_model_folder.grid(row=5, column=0, padx=20, pady=10)
+        self.choose_model_folder.grid(row=4, column=0, padx=20, pady=10, sticky='w')
 
 
         self.model_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
-        self.model_folder_path.grid(row=5, column=1, padx=20, pady=20)
+        self.model_folder_path.grid(row=4, column=1, padx=20, pady=20)
 
-        self.home_explanation_2 = customtkinter.CTkLabel(self.home_frame, text='      2. Go to the menus on the left and check your options and inputs', font=customtkinter.CTkFont(size=15))
-        self.home_explanation_2.grid(row=6, column=0)
+        self.home_explanation_2 = customtkinter.CTkLabel(self.home_frame, text='    2. Go to the menus on the left and check your options and inputs', font=customtkinter.CTkFont(size=15))
+        self.home_explanation_2.grid(row=6, column=0, sticky='w')
 
         self.run_button = customtkinter.CTkButton(self.home_frame, text='Run', command=self.run_starlighter)
-        self.run_button.grid(row=7, column=2)
+        self.run_button.grid(row=7, column=0, sticky='w')
 
         self.reset_button = customtkinter. CTkButton(self.home_frame, text='Reset', command=self.reset_event)
-        self.reset_button.grid(row=7, column=3)
+        self.reset_button.grid(row=7, column=1, sticky='w')
 
 
 
