@@ -1,5 +1,7 @@
+import io
 import os
 import sys
+from contextlib import redirect_stderr, redirect_stdout
 from tkinter import filedialog
 
 import customtkinter
@@ -16,12 +18,15 @@ class output_window(customtkinter.CTkToplevel):
     def __init__(self):
         super().__init__()
 
-        self.geometry("400x300")
+        self.geometry("500x500")
+        self.grid_rowconfigure(0, weight=1)  # configure grid system
+        self.grid_columnconfigure(0, weight=1)
 
         self.label = customtkinter.CTkLabel(self, text="Terminal")
-        self.label.pack(padx=20, pady=20)
+        
 
-        self.code_textbox = customtkinter.CTkTextbox(self, font=customtkinter.CTkFont(size=10), width=300, text_color='white')
+        self.code_textbox = customtkinter.CTkTextbox(self, font=customtkinter.CTkFont(size=15), width=300, text_color='white')
+        self.code_textbox.grid(row=0, column=0, sticky="nsew")
         
 
 class App(customtkinter.CTk):
@@ -259,18 +264,28 @@ class App(customtkinter.CTk):
                 imagej_roi = False
 
     def run_starlighter(self):
-
         if self.code_textbox_window is None or not self.code_textbox_window.winfo_exists():
-            self.code_textbox_window = output_window(self)  # create window if its None or destroyed
+            self.code_textbox_window = output_window()  # create window if its None or destroyed
         else:
             self.code_textbox_window.focus()
 
-        starlight.fdistari(image_folder, model_name, model_path, imagej_roi)
-        starlight.nonapari(image_folder, photo_number)
-        starlight.stradivari(image_folder)
+        with io.StringIO() as stdout_buffer, io.StringIO() as stderr_buffer:
+            with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
+                starlight.fdistari(image_folder, model_name, model_path, imagej_roi)
+                starlight.nonapari(image_folder, photo_number)
+                starlight.stradivari(image_folder)
 
-        self.code_textbox.insert('0.0', sys.stdout)
-        self.code_textbox.insert('0.0', sys.stderr)
+            # Get the output from the StringIO objects
+                stdout_text = stdout_buffer.getvalue()
+                stderr_text = stderr_buffer.getvalue()
+
+                # Insert the output into the GUI
+                self.code_textbox_window.code_textbox.insert('0.0', stdout_text)
+                self.code_textbox_window.code_textbox.insert('0.0', stderr_text)
+
+
+        #self.code_textbox.insert('0.0', sys.stdout)
+        #self.code_textbox.insert('0.0', sys.stderr)
 
 
 
@@ -311,11 +326,11 @@ class App(customtkinter.CTk):
         self.model_name_entry.delete(0, len(self.model_name_entry.get()))
 
         if self.code_textbox_window is None or not self.code_textbox_window.winfo_exists():
-            self.code_textbox_window = output_window(self)  # create window if its None or destroyed
+            self.code_textbox_window = output_window()  # create window if its None or destroyed
         else:
             self.code_textbox_window.focus()
 
-        self.code_textbox.insert('0.0', ' Inputs were reset and all files created by Starlighter were deleted')
+        self.code_textbox_window.code_textbox.insert('0.0', ' Inputs were reset and all files created by Starlighter were deleted')
 
 
 if __name__ == "__main__":
@@ -324,13 +339,13 @@ if __name__ == "__main__":
 
 
 
-print(f'The image folder path is: {image_folder}')
-print(f'The model name is : {model_name}')
-print(f'The model folder path is: {model_path}')
+#print(f'The image folder path is: {image_folder}')
+#print(f'The model name is : {model_name}')
+#print(f'The model folder path is: {model_path}')
 
-if imagej_roi:
-    print(f'ImageJ ROI will be exported')
-elif not imagej_roi:
-    print(f"ImageJ ROI won't be exported")
+#if imagej_roi:
+    #print(f'ImageJ ROI will be exported')
+#elif not imagej_roi:
+    #print(f"ImageJ ROI won't be exported")
 
-print(f'The photo number is {photo_number}')
+#print(f'The photo number is {photo_number}')
