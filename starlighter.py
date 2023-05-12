@@ -182,7 +182,7 @@ def stradivari(image_folder):
         blue_keyword = ['CFP']
     
         # Flag variables
-
+        global green_found, yellow_found, red_found, blue_found
         green_found = False
         yellow_found = False
         red_found = False
@@ -193,24 +193,28 @@ def stradivari(image_folder):
         for df_name, df in dataframes.items():
 
             if any(keyword in df_name for keyword in green_keyword):
+
                 if not green_found:
-                    
+                   
                     color_count += 1
                     green_found = True
                 
             if any(keyword in df_name for keyword in yellow_keyword):
+
                 if not yellow_found:
                     
                     color_count += 1
                     yellow_found = True
 
             if any(keyword in df_name for keyword in red_keyword):
+               
                 if not red_found:
                     
                     color_count += 1
                     red_found = True
 
             if any(keyword in df_name for keyword in blue_keyword):
+                
                 if not blue_found:
                     
                     color_count += 1
@@ -263,42 +267,55 @@ def stradivari(image_folder):
                     break
                 
         if no_color:
-            greendfs[csv_name] = df
-            yellowdfs[csv_name] = df
-            reddfs[csv_name] = df
-            bluedfs[csv_name] = df
-    
+            if green_found:
+                greendfs[csv_name] = df
+            if yellow_found:
+                yellowdfs[csv_name] = df
+            if red_found:
+                reddfs[csv_name] = df
+            if blue_found:
+                bluedfs[csv_name] = df
+
+        
     
     # For the green channel
+        
     if len(greendfs) != 0:
-        df_concat = pd.concat(greendfs.values(), keys=greendfs.keys())
-        df_concat = df_concat.reset_index(level=0)
-        df_concat.columns = ['key', 'Label', 'Mean Intensity']
-        df_melted = pd.melt(df_concat, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
+        df_concat_green = pd.concat(greendfs.values(), keys=greendfs.keys())
+        df_concat_green = df_concat_green.reset_index(level=0)
+        df_concat_green.columns = ['key', 'Label', 'Mean Intensity']
+        df_melted_green = pd.melt(df_concat_green, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
 
-        df_melted['Log Value'] = np.log10(df_melted['Value'])
+        df_melted_green['Log Value'] = np.log10(df_melted_green['Value'])
 
+
+    # For the yellow channel
     if len(yellowdfs) != 0:
-        # For the yellow channel
-        df_concat2 = pd.concat(yellowdfs.values(), keys=yellowdfs.keys())
-        df_concat2 = df_concat2.reset_index(level=0)
-        df_concat2.columns = ['key', 'Label', 'Mean Intensity']
-        df_melted2 = pd.melt(df_concat2, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
+        df_concat_yellow = pd.concat(yellowdfs.values(), keys=yellowdfs.keys())
+        df_concat_yellow = df_concat_yellow.reset_index(level=0)
+        df_concat_yellow.columns = ['key', 'Label', 'Mean Intensity']
+        df_melted_yellow = pd.melt(df_concat_yellow, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
 
-        df_melted2['Log Value'] = np.log10(df_melted2['Value'])
+        df_melted_yellow['Log Value'] = np.log10(df_melted_yellow['Value'])
 
 
     fig, axs = plt.subplots(ncols=color_count, figsize=(8*color_count,8))
     fig.subplots_adjust(bottom=0.25)
     
-    if len(greendfs) != 0:
 
-        sns.violinplot(ax= axs[0], x='key', y='Log Value', data=df_melted, color=('#32E00B'))
 
+    if len(greendfs) != 0 and len(yellowdfs) == 0:
+
+        sns.violinplot(ax= axs, x='key', y='Log Value', data=df_melted_green, color=('#32E00B'))
+
+        axs.set_xlabel('Strains')
+        axs.set_ylabel('Log Average Fluorescence')
+
+        axs.set_xticklabels(axs.get_xticklabels(), rotation=45, ha='right')
 
 
     if len(yellowdfs) != 0 and len(greendfs) == 0:
-        sns.violinplot(ax= axs, x='key', y='Log Value', data=df_melted2, color=('#FFFF00'))
+        sns.violinplot(ax= axs, x='key', y='Log Value', data=df_melted_yellow, color=('#FFFF00'))
 
         axs.set_xlabel('Strains')
         axs.set_ylabel('Log Average Fluorescence')
@@ -306,7 +323,8 @@ def stradivari(image_folder):
         axs.set_xticklabels(axs.get_xticklabels(), rotation=45, ha='right')
 
     if len(greendfs) != 0 and len(yellowdfs) != 0:
-        sns.violinplot(ax= axs[1], x='key', y='Log Value', data=df_melted2, color=('#FFFF00'))
+        sns.violinplot(ax= axs[0], x='key', y='Log Value', data=df_melted_green, color=('#32E00B'))
+        sns.violinplot(ax= axs[1], x='key', y='Log Value', data=df_melted_yellow, color=('#FFFF00'))
 
 
         axs[0].set_xlabel('Strains')
