@@ -27,7 +27,7 @@ np.random.seed(6)
 lbl_cmap = random_label_cmap()
 
 
-def fdistari(image_folder, model_name, model_path, imagej_roi=False):
+def fdistari(image_folder, model_path, imagej_roi=False):
     """This function allows the use of a trained model in Stardist2D to segment cells in a folder with microscopy images. This outputs 
     TIF images that are labeled."""
 
@@ -66,8 +66,9 @@ def fdistari(image_folder, model_name, model_path, imagej_roi=False):
 
 
         #Specify the model
-            
-        model = StarDist2D(None, name=model_name, basedir=model_path)   
+        model_name = os.path.basename(model_path)
+        model_path_dir = os.path.dirname(model_path)
+        model = StarDist2D(None, name=model_name, basedir=model_path_dir)   
         
 
 

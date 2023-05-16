@@ -103,11 +103,7 @@ class App(customtkinter.CTk):
         self.image_folder_path = customtkinter.CTkLabel(self.home_frame, text="", compound="left", fg_color=("gray75", "gray25"), font=customtkinter.CTkFont(size=10))
         self.image_folder_path.grid(row=3, column=0, padx=20, pady=20, sticky='w')
 
-        self.model_name_entry = customtkinter.CTkEntry(self.home_frame, placeholder_text='Insert here the model folder name', width=505, corner_radius=5)
-        self.model_name_entry.grid(row=4, column=0)
-
-        self.model_name_entry_button = customtkinter.CTkButton(self.home_frame, text='Set', command=self.model_name_entry_get, width=40)
-        self.model_name_entry_button.grid(row=4, column=1, sticky='w')
+        
 
         self.choose_model_folder = customtkinter.CTkButton(self.home_frame, text='Choose model folder', command=self.get_folder2)
         self.choose_model_folder.grid(row=5, column=0, padx=20, pady=10, sticky='w')
@@ -153,7 +149,7 @@ class App(customtkinter.CTk):
         self.blank_line_1.grid(row=0, column=0, padx=5, pady=5)
 
 
-        # create third frame
+        # create nonapari frame
         self.nonapari_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.nonapari_frame.grid_rowconfigure(5, weight=1)
         self.nonapari_frame.grid_columnconfigure(5, weight=1)
@@ -174,8 +170,10 @@ class App(customtkinter.CTk):
         self.nonapari_explanation_2.grid(row=1, column=0, padx=20, pady=20)
         
 
-        # create third frame
+        # create stradivari frame
         self.stradivari_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.run_stradivari_button = customtkinter.CTkButton(self.stradivari_frame, text='Run Stradivari', command=self.run_stradivari)
+        self.run_stradivari_button.grid(row=1, column=0)
        
         # select default frame
         self.select_frame_by_name("Home")
@@ -241,13 +239,6 @@ class App(customtkinter.CTk):
             photo_number = int(photo_number_string)
             self.photo_number_entry_button.configure(fg_color='green')
 
-
-    def model_name_entry_get(self):
-            global model_name
-
-            model_name = self.model_name_entry.get()
-
-            self.model_name_entry_button.configure(fg_color='green')
            
     def checkbox_imagej_roi(self):
             global imagej_roi
@@ -259,10 +250,12 @@ class App(customtkinter.CTk):
     def run_starlighter(self):
         
 
-        starlight.fdistari(image_folder, model_name, model_path, imagej_roi)
+        starlight.fdistari(image_folder, model_path, imagej_roi)
         starlight.nonapari(image_folder, photo_number)
         starlight.stradivari(image_folder)
 
+    def run_stradivari(self):
+        starlight.stradivari(image_folder)
 
     def reset_inputs_event(self):
         global image_folder, model_path, model_path, photo_number
@@ -275,9 +268,9 @@ class App(customtkinter.CTk):
         self.image_folder_path.configure(text='')
         self.model_folder_path.configure(text='')
         self.photo_number_entry.delete(0, len(self.photo_number_entry.get()))
-        self.model_name_entry.delete(0, len(self.model_name_entry.get()))
+        
         self.photo_number_entry_button.configure(fg_color='#1F6AA5')
-        self.model_name_entry_button.configure(fg_color='#1F6AA5')
+        
 
         self.code_textbox.insert('0.0', 'Inputs were reset.')
 
@@ -297,9 +290,9 @@ class App(customtkinter.CTk):
         self.image_folder_path.configure(text='')
         self.model_folder_path.configure(text='')
         self.photo_number_entry.delete(0, len(self.photo_number_entry.get()))
-        self.model_name_entry.delete(0, len(self.model_name_entry.get()))
+        
         self.photo_number_entry_button.configure(fg_color='#1F6AA5')
-        self.model_name_entry_button.configure(fg_color='#1F6AA5')
+        
 
 
         self.code_textbox.insert('0.0', 'Inputs were reset and all files created by Starlighter were deleted.')
