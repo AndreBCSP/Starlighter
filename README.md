@@ -25,10 +25,3 @@ Starlighter requires the following inputs:
 
 -The number of the position of the image you want to quantify in the folders
 
-
-
-Here is an example of the output of the entire program:
-
-<img src="https://user-images.githubusercontent.com/131555736/234344748-497467fb-6e80-4f02-989e-685f92db7950.png" width="700">
-
-<img src="https://user-images.githubusercontent.com/131555736/234346766-ddad9edd-f849-407f-8b31-24d8eea272e6.png" witdh="1">
