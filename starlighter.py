@@ -138,250 +138,71 @@ def nonapari(image_folder, photo_number):
                         writer.writerow([i+1, mean_intensity])
 
 
+                # create an empty dictionary to store the dataframes
+                dataframes = {}
+                root_dir = image_folder
 
+                # loop through the directory
+                for subdir, dirs, files in os.walk(root_dir):
+                    for file in files:
+                        # check if the file is a CSV file
 
-
-
-def stradivari(image_folder):
-    """This function takes CSV files, processes their data and plots them into violin plots and a table with statistical information"""
-
-    # create an empty dictionary to store the dataframes
-    dataframes = {}
-    root_dir = image_folder
-
-    # loop through the directory
-    for subdir, dirs, files in os.walk(root_dir):
-        for file in files:
-            # check if the file is a CSV file
-
-            if file.endswith('_Results.csv'):
-            # extract the name of the CSV file (without the extension or '_Results' suffix)
-                csv_name = file[:-12]
-                #print(csv_name)   This is working fine so far
+                        if file.endswith('_Results.csv'):
+                        # extract the name of the CSV file (without the extension or '_Results' suffix)
+                            csv_name = file[:-12]
+                            #print(csv_name)   This is working fine so far
             
-                # read the CSV file into a dataframe
-                df = pd.read_csv(os.path.join(subdir, file))
-                # store the dataframe in the dictionary using the CSV name as the key
-                if csv_name not in dataframes:
-                    dataframes[csv_name] = df
-                else:
-                    # if a dataframe with the same CSV name already exists, concatenate them
-                    dataframes[csv_name] = pd.concat([dataframes[csv_name], df], ignore_index=True)
+                            # read the CSV file into a dataframe
+                            df = pd.read_csv(os.path.join(subdir, file))
+
+                            # store the dataframe in the dictionary using the CSV name as the key
+                            if csv_name not in dataframes:
+                                dataframes[csv_name] = df
+                            else:
+                                # if a dataframe with the same CSV name already exists, concatenate them
+                                dataframes[csv_name] = pd.concat([dataframes[csv_name], df], ignore_index=True)
+
+                            for index, df in enumerate(dataframes):
+                                filename = f'{csv_name}_Results.csv'
+
+                                df.to_csv(filename, index=False)
 
 
+# df_concat_green = pd.concat(greendfs.values(), keys=greendfs.keys())
+#         df_concat_green = df_concat_green.reset_index(level=0)
+#         df_concat_green.columns = ['key', 'Label', 'Mean Intensity']
+#         df_melted_green = pd.melt(df_concat_green, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
 
+#         df_melted_green['Log Value'] = np.log10(df_melted_green['Value'])
 
-            # Loop through the dictionary and print the concatenated dataframes
-    dfs = {}
+# all_tables = []
 
-    for csv_name, df in dataframes.items():
-        color_count = 0
-
-        green_keyword = ['GFP']
-        yellow_keyword = ['Cit', 'YFP']
-        red_keyword = ['mCherry', 'mScarlet']
-        blue_keyword = ['CFP']
+#     for csv_name, df in dataframes.items():
+#         df = df.drop('Label', axis=1)
     
-        # Flag variables
-        global green_found, yellow_found, red_found, blue_found
-        green_found = False
-        yellow_found = False
-        red_found = False
-        blue_found = False
-
-        
-
-        for df_name, df in dataframes.items():
-
-            if any(keyword in df_name for keyword in green_keyword):
-
-                if not green_found:
-                   
-                    color_count += 1
-                    green_found = True
-                
-            if any(keyword in df_name for keyword in yellow_keyword):
-
-                if not yellow_found:
-                    
-                    color_count += 1
-                    yellow_found = True
-
-            if any(keyword in df_name for keyword in red_keyword):
-               
-                if not red_found:
-                    
-                    color_count += 1
-                    red_found = True
-
-            if any(keyword in df_name for keyword in blue_keyword):
-                
-                if not blue_found:
-                    
-                    color_count += 1
-                    blue_found = True
-
-    #print(color_count)
-
-
-
+#         df_stats = df.describe()
+#         df_count = df_stats.loc['count']
+#         df_mean = np.log10(df_stats.loc['mean'])
+#         df_median = np.log10(df_stats.loc['50%'])
+#         df_std = np.log10(df_stats.loc['std'])
     
-    greendfs = {}
-    yellowdfs = {}
-    bluedfs = {}
-    reddfs = {}
-
-
-    for csv_name, df in dataframes.items():
-        color_found = False
-        no_color = True
+#         table_data = pd.DataFrame({
+#             'Strain': csv_name,
+#             'Cell count': df_count,
+#             'Mean': df_mean,
+#             'Median': df_median,
+#             'Std': df_std
+#             })
     
-        for keyword in green_keyword:
-            if keyword in csv_name:
-                greendfs[csv_name] = df
-                color_found = True
-                no_color = False
-                break
-                
-        if not color_found:
-            for keyword in yellow_keyword:
-                if keyword in csv_name:
-                    yellowdfs[csv_name] = df
-                    color_found = True
-                    no_color = False
-                    break
-                    
-        if not color_found:
-            for keyword in red_keyword:
-                if keyword in csv_name:
-                    reddfs[csv_name] = df
-                    color_found = True
-                    no_color = False
-                    break
-                    
-        if not color_found:
-            for keyword in blue_keyword:
-                if keyword in csv_name:
-                    bluedfs[csv_name] = df
-                    color_found = True
-                    no_color = False
-                    break
-                
-        if no_color:
-            if green_found:
-                greendfs[csv_name] = df
-            if yellow_found:
-                yellowdfs[csv_name] = df
-            if red_found:
-                reddfs[csv_name] = df
-            if blue_found:
-                bluedfs[csv_name] = df
-
-        
-    
-    # For the green channel
-        
-    if len(greendfs) != 0:
-        df_concat_green = pd.concat(greendfs.values(), keys=greendfs.keys())
-        df_concat_green = df_concat_green.reset_index(level=0)
-        df_concat_green.columns = ['key', 'Label', 'Mean Intensity']
-        df_melted_green = pd.melt(df_concat_green, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
-
-        df_melted_green['Log Value'] = np.log10(df_melted_green['Value'])
+#         #print(table_data)
 
 
-    # For the yellow channel
-    if len(yellowdfs) != 0:
-        df_concat_yellow = pd.concat(yellowdfs.values(), keys=yellowdfs.keys())
-        df_concat_yellow = df_concat_yellow.reset_index(level=0)
-        df_concat_yellow.columns = ['key', 'Label', 'Mean Intensity']
-        df_melted_yellow = pd.melt(df_concat_yellow, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
+#         # Add the table to the list of tables
+#         all_tables.append(table_data)
 
-        df_melted_yellow['Log Value'] = np.log10(df_melted_yellow['Value'])
-
-
-    fig, axs = plt.subplots(ncols=color_count, figsize=(8*color_count,8))
-    fig.subplots_adjust(bottom=0.25)
-    
-
-
-    if len(greendfs) != 0 and len(yellowdfs) == 0:
-
-        sns.violinplot(ax= axs, x='key', y='Log Value', data=df_melted_green, color=('#32E00B'))
-
-        axs.set_xlabel('Strains')
-        axs.set_ylabel('Log Average Fluorescence')
-
-        axs.set_xticklabels(axs.get_xticklabels(), rotation=45, ha='right')
-
-
-    if len(yellowdfs) != 0 and len(greendfs) == 0:
-        sns.violinplot(ax= axs, x='key', y='Log Value', data=df_melted_yellow, color=('#FFFF00'))
-
-        axs.set_xlabel('Strains')
-        axs.set_ylabel('Log Average Fluorescence')
-
-        axs.set_xticklabels(axs.get_xticklabels(), rotation=45, ha='right')
-
-    if len(greendfs) != 0 and len(yellowdfs) != 0:
-        sns.violinplot(ax= axs[0], x='key', y='Log Value', data=df_melted_green, color=('#32E00B'))
-        sns.violinplot(ax= axs[1], x='key', y='Log Value', data=df_melted_yellow, color=('#FFFF00'))
-
-
-        axs[0].set_xlabel('Strains')
-        axs[1].set_xlabel('Strains')
-        axs[0].set_ylabel('Log Average Fluorescence')
-        axs[1].set_ylabel('')
-    
-
-    # Set the diagonal x-tick labels for each subplot
-        for ax in axs:
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
-    plt.show()
-    
-
-    all_tables = []
-
-    for csv_name, df in dataframes.items():
-        df = df.drop('Label', axis=1)
-    
-        df_stats = df.describe()
-        df_count = df_stats.loc['count']
-        df_mean = np.log10(df_stats.loc['mean'])
-        df_median = np.log10(df_stats.loc['50%'])
-        df_std = np.log10(df_stats.loc['std'])
-    
-        table_data = pd.DataFrame({
-            'Strain': csv_name,
-            'Cell count': df_count,
-            'Mean': df_mean,
-            'Median': df_median,
-            'Std': df_std
-            })
-    
-        #print(table_data)
-
-
-        # Add the table to the list of tables
-        all_tables.append(table_data)
-
-            # Concatenate all of the tables into a single DataFrame
-        final_table = pd.concat(all_tables)
-        final_table = final_table.applymap(lambda x: f'{x:.2f}' if isinstance(x, (int, float)) else x)
-
-        # Create a plot of the table
-    fig, ax = plt.subplots(figsize=(12, 4))
-    ax.axis('off')
-    ax.axis('tight')
-    ax.table(cellText=final_table.values, colLabels=final_table.columns, loc='center')
-
-    final_table.to_csv('Final_Results.csv', index=False)
-    plt.show()
-
-
-
-
-
+#             # Concatenate all of the tables into a single DataFrame
+#         final_table = pd.concat(all_tables)
+#         final_table = final_table.applymap(lambda x: f'{x:.2f}' if isinstance(x, (int, float)) else x)
 
 
 def reset(image_folder):
@@ -398,3 +219,4 @@ def reset(image_folder):
                     
             else:
                 continue
+    print('All file created by Starlighter were deleted')

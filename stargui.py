@@ -1,4 +1,5 @@
 
+import ast
 import os
 from tkinter import filedialog
 
@@ -7,11 +8,10 @@ import starlighter as starlight
 from PIL import Image
 
 image_folder = ''
-model_name = ''
 model_path = ''
 imagej_roi = ''
 photo_number = ''
-        
+
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -41,13 +41,12 @@ class App(customtkinter.CTk):
                                                  dark_image=Image.open(os.path.join(image_path, "fdistari_icon.png")), size=(30, 30))
         self.nonap_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "nonapari_icon.png")),
                                                      dark_image=Image.open(os.path.join(image_path, "nonapari_icon.png")), size=(30, 30))
-        self.stradi_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "plot_light_icon.png")),
-                                                     dark_image=Image.open(os.path.join(image_path, "plot_light_icon.png")), size=(30, 30))
+        
 
         # create navigation frame
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
-        self.navigation_frame.grid_rowconfigure(5, weight=1)
+        self.navigation_frame.grid_rowconfigure(4, weight=1)
 
         self.navigation_frame_label = customtkinter.CTkLabel(self.navigation_frame, text="  Starlighter", image=self.logo_image,
                                                              compound="left", font=customtkinter.CTkFont(size=25, weight="bold"))
@@ -71,10 +70,6 @@ class App(customtkinter.CTk):
                                                       image=self.nonap_image, anchor="w", command=self.nonapari_button_event, font=customtkinter.CTkFont(size=20))
         self.nonapari_button.grid(row=3, column=0, sticky="ew")
 
-        self.stradivari_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="  Stradivari",
-                                                      fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
-                                                      image=self.stradi_image, anchor="w", command=self.stradivari_button_event, font=customtkinter.CTkFont(size=20))
-        self.stradivari_button.grid(row=4, column=0, sticky="ew")
 
 
         self.appearance_mode_menu = customtkinter.CTkOptionMenu(self.navigation_frame, values=["Light", "Dark", "System"],
@@ -169,11 +164,6 @@ class App(customtkinter.CTk):
         self.nonapari_explanation_2 = customtkinter.CTkLabel(self.nonapari_frame, text=" If you want to quantify, for example, GFP, and it is the second photo, write 2.", font=customtkinter.CTkFont(size=15))
         self.nonapari_explanation_2.grid(row=1, column=0, padx=20, pady=20)
         
-
-        # create stradivari frame
-        self.stradivari_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.run_stradivari_button = customtkinter.CTkButton(self.stradivari_frame, text='Run Stradivari', command=self.run_stradivari)
-        self.run_stradivari_button.grid(row=1, column=0)
        
         # select default frame
         self.select_frame_by_name("Home")
@@ -183,7 +173,7 @@ class App(customtkinter.CTk):
         self.home_button.configure(fg_color=("gray75", "gray25") if name == "Home" else "transparent")
         self.fdistari_button.configure(fg_color=("gray75", "gray25") if name == "FDistari" else "transparent")
         self.nonapari_button.configure(fg_color=("gray75", "gray25") if name == "NoNapari" else "transparent")
-        self.stradivari_button.configure(fg_color=("gray75", "gray25") if name == "Stradivari" else "transparent")
+        
 
 
         # show selected frame
@@ -199,10 +189,7 @@ class App(customtkinter.CTk):
             self.nonapari_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.nonapari_frame.grid_forget()
-        if name == "Stradivari":
-            self.stradivari_frame.grid(row=0, column=1, sticky="nsew")
-        else:
-            self.stradivari_frame.grid_forget()
+        
 
     def home_button_event(self):
         self.select_frame_by_name("Home")
@@ -213,15 +200,10 @@ class App(customtkinter.CTk):
     def nonapari_button_event(self):
         self.select_frame_by_name("NoNapari")
 
-    def stradivari_button_event(self):
-        self.select_frame_by_name("Stradivari")
 
     def change_appearance_mode_event(self, new_appearance_mode):
         customtkinter.set_appearance_mode(new_appearance_mode)
 
-
-
-    
 
     def get_folder1(self):
         global image_folder
@@ -231,7 +213,7 @@ class App(customtkinter.CTk):
     def get_folder2(self):
         global model_path, model_name
         model_path = filedialog.askdirectory()
-        self.model_folder_path.configure(text=f'Model: {model_name}     in: {model_path}')
+        self.model_folder_path.configure(text=model_path)
     
     def photo_number_entry_get(self):
             photo_number_string = self.photo_number_entry.get()
@@ -247,70 +229,51 @@ class App(customtkinter.CTk):
             elif self.check_var.get() == 'off':
                 imagej_roi = False
 
+
     def run_starlighter(self):
         
 
         starlight.fdistari(image_folder, model_path, imagej_roi)
         starlight.nonapari(image_folder, photo_number)
-        starlight.stradivari(image_folder)
 
-    def run_stradivari(self):
-        starlight.stradivari(image_folder)
+
 
     def reset_inputs_event(self):
-        global image_folder, model_path, model_path, photo_number
+        global image_folder, model_path, photo_number, imagej_roi
         image_folder = ''
         model_path = ''
+        imagej_roi = ''
         photo_number = ''
-        model_name = ''
+        
+        
 
         self.check_var = 'off'
         self.image_folder_path.configure(text='')
         self.model_folder_path.configure(text='')
         self.photo_number_entry.delete(0, len(self.photo_number_entry.get()))
-        
         self.photo_number_entry_button.configure(fg_color='#1F6AA5')
-        
-
         self.code_textbox.insert('0.0', 'Inputs were reset.')
 
     def reset_all_event(self):
         
-        global image_folder, model_path, model_path, photo_number
-
+        global image_folder, model_path, photo_number, imagej_roi
         starlight.reset(image_folder)
 
         image_folder = ''
         model_path = ''
+        imagej_roi = ''
         photo_number = ''
-        model_name = ''
+        
 
 
         self.check_var = 'off'
         self.image_folder_path.configure(text='')
         self.model_folder_path.configure(text='')
         self.photo_number_entry.delete(0, len(self.photo_number_entry.get()))
-        
         self.photo_number_entry_button.configure(fg_color='#1F6AA5')
-        
-
-
         self.code_textbox.insert('0.0', 'Inputs were reset and all files created by Starlighter were deleted.')
 
 
 if __name__ == "__main__":
     app = App()
     app.mainloop()
-
-
-
-#print(f'The image folder path is: {image_folder}')
-#print(f'The model name is : {model_name}')
-#print(f'The model folder path is: {model_path}')
-
-#if imagej_roi:
-    #print(f'ImageJ ROI will be exported')
-#elif not imagej_roi:
-    #print(f"ImageJ ROI won't be exported")
-
-#print(f'The photo number is {photo_number}')
