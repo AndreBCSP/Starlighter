@@ -27,7 +27,7 @@ np.random.seed(6)
 lbl_cmap = random_label_cmap()
 
 
-def fdistari(image_folder, model_path, imagej_roi=False):
+def segment(image_folder, model_path, imagej_roi=False):
     """This function allows the use of a trained model in Stardist2D to segment cells in a folder with microscopy images. This outputs 
     TIF images that are labeled."""
 
@@ -96,7 +96,7 @@ def fdistari(image_folder, model_path, imagej_roi=False):
 
     
 
-def nonapari(image_folder, photo_number):
+def quantify(image_folder, photo_number):
     """This function takes a labeled image from Stardist and labels a fluorescence image, quantifies the signal from each cell and exports the data to CSV format"""
     root_dir = image_folder
     index = photo_number - 1
@@ -114,7 +114,7 @@ def nonapari(image_folder, photo_number):
 
                 # Check if a file exists at the specified index
                 if index < len(all_files) and all_files[index].endswith(".tif"):
-                    print(f"File '{all_files[index]}' exists at index {index}")
+                    print(f"File '{all_files[index]}' is being quantified")
                     unlabeled_image = skimage.io.imread(os.path.join(subdir, all_files[index]))
                 else:
                     print(f"No file exists at index {index}")
@@ -138,75 +138,101 @@ def nonapari(image_folder, photo_number):
                         writer.writerow([i+1, mean_intensity])
 
 
-                # create an empty dictionary to store the dataframes
-                dataframes = {}
-                root_dir = image_folder
 
-                # loop through the directory
-                for subdir, dirs, files in os.walk(root_dir):
-                    for file in files:
-                        # check if the file is a CSV file
 
-                        if file.endswith('_Results.csv'):
-                        # extract the name of the CSV file (without the extension or '_Results' suffix)
-                            csv_name = file[:-12]
-                            #print(csv_name)   This is working fine so far
+
+
+def analyse(image_folder):
+    """This function takes CSV files, processes their data and plots them into violin plots and a table with statistical information"""
+
+    # create an empty dictionary to store the dataframes
+    dataframes = {}
+    root_dir = image_folder
+
+    # loop through the directory
+    for subdir, dirs, files in os.walk(root_dir):
+        for file in files:
+            # check if the file is a CSV file
+
+            if file.endswith('_Results.csv'):
+            # extract the name of the CSV file (without the extension or '_Results' suffix)
+                csv_name = file[:-12]
+                
             
-                            # read the CSV file into a dataframe
-                            df = pd.read_csv(os.path.join(subdir, file))
-
-                            # store the dataframe in the dictionary using the CSV name as the key
-                            if csv_name not in dataframes:
-                                dataframes[csv_name] = df
-                            else:
-                                # if a dataframe with the same CSV name already exists, concatenate them
-                                dataframes[csv_name] = pd.concat([dataframes[csv_name], df], ignore_index=True)
-
-                            for index, df in enumerate(dataframes):
-                                filename = f'{csv_name}_Results.csv'
-
-                                df.to_csv(filename, index=False)
+                # read the CSV file into a dataframe
+                df = pd.read_csv(os.path.join(subdir, file))
+                # store the dataframe in the dictionary using the CSV name as the key
+                if csv_name not in dataframes:
+                    dataframes[csv_name] = df
+                else:
+                    # if a dataframe with the same CSV name already exists, concatenate them
+                    dataframes[csv_name] = pd.concat([dataframes[csv_name], df], ignore_index=True)
 
 
-# df_concat_green = pd.concat(greendfs.values(), keys=greendfs.keys())
-#         df_concat_green = df_concat_green.reset_index(level=0)
-#         df_concat_green.columns = ['key', 'Label', 'Mean Intensity']
-#         df_melted_green = pd.melt(df_concat_green, id_vars=['key', 'Label'], var_name='Variable', value_name='Value')
 
-#         df_melted_green['Log Value'] = np.log10(df_melted_green['Value'])
-
-# all_tables = []
-
-#     for csv_name, df in dataframes.items():
-#         df = df.drop('Label', axis=1)
     
-#         df_stats = df.describe()
-#         df_count = df_stats.loc['count']
-#         df_mean = np.log10(df_stats.loc['mean'])
-#         df_median = np.log10(df_stats.loc['50%'])
-#         df_std = np.log10(df_stats.loc['std'])
+            
+
+    all_tables = []
+    os.mkdir(f'{image_folder}/Results')
+    for csv_name, df in dataframes.items():
+
+        df['Log Value'] = np.log10(df['Mean Intensity'])
+        df.to_csv(f'{image_folder}/Results/{csv_name}_Results.csv', index=False)
+
+        df_stats = df['Log Value'].describe()
+        df_count = df_stats.loc['count']
+        df_mean = df_stats.loc['mean']
+        df_median = df_stats.loc['50%']
+        df_std = df_stats.loc['std']
+        df_25 = df_stats.loc['25%']
+        df_75 = df_stats.loc['75%']
+
+
+
+        strain_list = [csv_name]
+        cell_count_list = [df_count]
+        mean_list = [df_mean]
+        median_list = [df_median]
+        std_list = [df_std]
+        q25_list = [df_25]
+        q75_list = [df_75]
     
-#         table_data = pd.DataFrame({
-#             'Strain': csv_name,
-#             'Cell count': df_count,
-#             'Mean': df_mean,
-#             'Median': df_median,
-#             'Std': df_std
-#             })
+        table_data = pd.DataFrame({
+
+            'Strain': strain_list,
+            'Cell count': cell_count_list,
+            'Mean': mean_list,
+            'Median': median_list,
+            'Std': std_list,
+            '25%': q25_list,
+            '75%': q75_list
+            })
     
-#         #print(table_data)
+        
+
+        table_df = pd.DataFrame(table_data)
+        table_df.set_index('Strain', inplace=True)
+
+        # Add the table to the list of tables
+        all_tables.append(table_df)
+
+            # Concatenate all of the tables into a single DataFrame
+    final_table = pd.concat(all_tables)
+    final_table = final_table.applymap(lambda x: f'{x:.2f}' if isinstance(x, (int, float)) else x)
+
+       
+
+    final_table.to_csv(f'{image_folder}/Results/Stats.csv', index=True)
+    
+    print('You can find the results in the "Results" folder in the image folder')
 
 
-#         # Add the table to the list of tables
-#         all_tables.append(table_data)
 
-#             # Concatenate all of the tables into a single DataFrame
-#         final_table = pd.concat(all_tables)
-#         final_table = final_table.applymap(lambda x: f'{x:.2f}' if isinstance(x, (int, float)) else x)
 
 
 def reset(image_folder):
-    """This function deletes all files created by eFQu in the input folder."""
+    """This function deletes all files created by Starlighter in the input folder."""
 
     for subdir, dirs, files in os.walk(image_folder):
         for file in files:
@@ -219,4 +245,4 @@ def reset(image_folder):
                     
             else:
                 continue
-    print('All file created by Starlighter were deleted')
+    print('All files created by Starlighter were deleted')

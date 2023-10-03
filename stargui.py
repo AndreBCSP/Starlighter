@@ -60,12 +60,12 @@ class App(customtkinter.CTk):
                                                    image=self.home_image, anchor="w", command=self.home_button_event, font=customtkinter.CTkFont(size=20))
         self.home_button.grid(row=1, column=0, sticky="ew")
 
-        self.fdistari_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="  FDistari",
+        self.fdistari_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="  Segmentation",
                                                       fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                       image=self.fdist_image, anchor="w", command=self.fdistari_button_event, font=customtkinter.CTkFont(size=20))
         self.fdistari_button.grid(row=2, column=0, sticky="ew")
 
-        self.nonapari_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="  NoNapari",
+        self.nonapari_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="  Quantification",
                                                       fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                       image=self.nonap_image, anchor="w", command=self.nonapari_button_event, font=customtkinter.CTkFont(size=20))
         self.nonapari_button.grid(row=3, column=0, sticky="ew")
@@ -171,8 +171,8 @@ class App(customtkinter.CTk):
     def select_frame_by_name(self, name):
         # set button color for selected button
         self.home_button.configure(fg_color=("gray75", "gray25") if name == "Home" else "transparent")
-        self.fdistari_button.configure(fg_color=("gray75", "gray25") if name == "FDistari" else "transparent")
-        self.nonapari_button.configure(fg_color=("gray75", "gray25") if name == "NoNapari" else "transparent")
+        self.fdistari_button.configure(fg_color=("gray75", "gray25") if name == "Segmentation" else "transparent")
+        self.nonapari_button.configure(fg_color=("gray75", "gray25") if name == "Quantification" else "transparent")
         
 
 
@@ -181,11 +181,11 @@ class App(customtkinter.CTk):
             self.home_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.home_frame.grid_forget()
-        if name == "FDistari":
+        if name == "Segmentation":
             self.fdistari_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.fdistari_frame.grid_forget()
-        if name == "NoNapari":
+        if name == "Quantification":
             self.nonapari_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.nonapari_frame.grid_forget()
@@ -195,10 +195,10 @@ class App(customtkinter.CTk):
         self.select_frame_by_name("Home")
 
     def fdistari_button_event(self):
-        self.select_frame_by_name("FDistari")
+        self.select_frame_by_name("Segmentation")
 
     def nonapari_button_event(self):
-        self.select_frame_by_name("NoNapari")
+        self.select_frame_by_name("Quantification")
 
 
     def change_appearance_mode_event(self, new_appearance_mode):
