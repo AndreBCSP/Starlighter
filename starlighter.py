@@ -94,10 +94,11 @@ def segment(image_folder, model_path, imagej_roi=False):
             roi_path_img = os.path.join(root_dir, subdir, f'Z{basename}_ROI.zip')
             export_imagej_rois(roi_path_img, polygons['coord'])
 
-    
+    print('All images were segmented')
 
 def quantify(image_folder, photo_number):
     """This function takes a labeled image from Stardist and labels a fluorescence image, quantifies the signal from each cell and exports the data to CSV format"""
+    print('Now quantifying fluorescence in segmented images...')
     root_dir = image_folder
     index = photo_number - 1
     
@@ -137,14 +138,14 @@ def quantify(image_folder, photo_number):
                     for i, mean_intensity in enumerate(mean_intensities):
                         writer.writerow([i+1, mean_intensity])
 
-
+    print('All segmented images were quantified')
 
 
 
 
 def analyse(image_folder):
     """This function takes CSV files, processes their data and plots them into violin plots and a table with statistical information"""
-
+    print('Now analyzing all collected data...')
     # create an empty dictionary to store the dataframes
     dataframes = {}
     root_dir = image_folder
@@ -233,7 +234,7 @@ def analyse(image_folder):
 
 def reset(image_folder):
     """This function deletes all files created by Starlighter in the input folder."""
-
+    print('Now removing files...')
     for subdir, dirs, files in os.walk(image_folder):
         for file in files:
             if file.endswith('_labels.tif'):
