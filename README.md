@@ -15,7 +15,7 @@ this data into a CSV file.
 ## Inputs and Outputs:
 Starlighter requires the following inputs:
 
--A folder with sub-folders containing the images
+-The path to the folder with subfolders containing the images
 
 <img src="https://user-images.githubusercontent.com/131555736/234348105-1e6548ba-831c-4b3c-ad25-1e4bea6af6d0.jpg" width="250">
 
@@ -23,5 +23,5 @@ Starlighter requires the following inputs:
 
 -The path to the folder containing the model folder
 
--The number of the position of the image you want to quantify in the folders
+-The number of the position, in the subfolder, of the fluorescence image you want to quantify in the folders
 
